@@ -1,4 +1,4 @@
-# This is the submission from below students:
+# This is the submission for sdn-lab1 by following students:
 # Zhen Chen(2665935), Chunyuan Yu(2587628), Letian Feng(2255840)
 
 # Unicast
@@ -11,4 +11,3 @@ dpctl add-flow tcp:127.0.0.1:6634 dl_dst=FF:FF:FF:FF:FF:FF,idle_timeout=0,action
 
 # Spam Filter
 dpctl add-flow tcp:127.0.0.1:6634 tp_src=25,idle_timeout=0,actions=
-
