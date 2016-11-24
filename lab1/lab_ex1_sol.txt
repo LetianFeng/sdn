@@ -1,0 +1,21 @@
+
+# === This line is optional, it is just for deleting old rules:
+dpctl del-flows tcp:127.0.0.1:6634
+
+# We create three rules: Whenever a destination MAC address of one of our VMs is found, forward it on the respective port.
+dpctl add-flow tcp:127.0.0.1:6634 dl_dst=00:00:00:00:00:01,idle_timeout=0,actions=output:1
+dpctl add-flow tcp:127.0.0.1:6634 dl_dst=00:00:00:00:00:02,idle_timeout=0,actions=output:2
+dpctl add-flow tcp:127.0.0.1:6634 dl_dst=00:00:00:00:00:03,idle_timeout=0,actions=output:3
+
+# Broadcast traffic is flooded for ARP to work
+dpctl add-flow tcp:127.0.0.1:6634 dl_dst=ff:ff:ff:ff:ff:ff,idle_timeout=0,actions=flood
+
+# Drop any SMTP traffic:
+dpctl add-flow tcp:127.0.0.1:6634 tcp,tp_dst=25,idle_timeout=0,priority=65535,actions=
+
+# Hint: To produce some SMTP traffic from h2 to h1, enter: 
+# h2 echo "Hello, world!" | nc 10.0.0.1 25
+# h1 nc -l 25
+
+# Show installed rules
+dpctl dump-flows tcp:127.0.0.1:6634
