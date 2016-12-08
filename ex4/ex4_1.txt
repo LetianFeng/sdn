@@ -1,0 +1,14 @@
+Problem 4.1
+a)
+SOFTWARE:
+This class of openflow hardware implements additional openflow features based on the hardware of traditional network devices. Most of the openflow features are implemented in software, only few featuresin hardware. Because this kind of openflow hardware could perfectly work with traditional devices, and the software implementation of openflow protocol doesn't cost much, so most of openflow devices are made in the class of software. But this kind of implementation is much slower than the classes "DEVICE" & "HARDWARE".
+
+HARDWARE:
+This class of openflow hardware implements all features in ASIC. The design and optimization of ASIC hardware cost lot of money and could last a long time, so there is not so many choices of this class on the markt. The most important advantage of this class is the fast package processing speed.
+
+b)
+Most flow tables have finite capacity. In previous versions of the specification, when a flow table is full, new flow entries are not inserted in the flow table and an error is returned to the controller. However, reaching that point is pretty problematic, as the controller need time to operate on the flow table and this may cause a disruption of service. Vacancy events adds a mechanism enabling the controller to get an early warning based on a capacity threshold chosen by the controller. This allows the controller to react in advance and avoid getting the table full.
+Source: OpenFlow Switch Specification v1.4.0
+
+c)
+
