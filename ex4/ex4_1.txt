@@ -11,4 +11,5 @@ Most flow tables have finite capacity. In previous versions of the specification
 Source: OpenFlow Switch Specification v1.4.0
 
 c)
-
+The part of matching field & priority should be stored in TCAM, while the other parts such as instructions, counters, timeouts could be placed in normal DRAMs.
+To implement constant-time packet processing, first of all, the constant-time packet matching should be implemented. However, if the matching field is stored in a RAM space, the incoming packet must be matched with usage of searching algorithms, which means the matching time is not constant, but depends on the size of matching table. Therefore, matching field must be stored in TCAM to ensure the constant-time packet matching. In comparison to that, making use of other parts such as instructions is not dependent of the number of entries, so different instructions could be saved in different position of DRAM & be pointed by the matching field in TCAM.
