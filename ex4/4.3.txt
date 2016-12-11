@@ -1,0 +1,21 @@
+Problem 4.3
+a)
+1. Managing flow control to make the network more intelligent. For example, in open flow protocol a controller tells switches where to send packets.
+2. Inventorying current state of physical devices inside the network for further extension of the network, e.g. monitoring which devices are inside the network and what tasks they can accomplish.
+3. Offering shortest path forwarding for communications.
+
+b). 
+I. Since VLAN of each datacenter are disjoint and packets can not be routed directly between them through a public network, all packets need to be encapsulated and transported  through an ip tunnel. In order to accomplish this, two additional switches should be used as end points between two datacenters as routers to route packets among them.
+
+II). Host A ->End Point of D -> End Point of E -> Host B
+
+III). (Ethernet, VLAN, IP, UDP) -> (Tunnel Header, Ethernet, VLAN, IP, UDP) -> (Ethernet, VLAN, IP, UDP)
+
+IV).
+1. Using 24 bit VXLAN we can potentially create 16 million networks, compare this to only 4 thousand networks using VLAN with 12 bits ID.
+2. Enables users to use the layer 3 features, which is impossible in VLAN.
+3. The virtual layer 2 is invisible to the physical layer, this feature offers many benefits, such as enabling duplication of MAC addresses, as long as they don’t exist in the same VXLAN segment.
+
+V). A potential advantage of OpenFlow is that it doesn’t involves encapsulation, which requires high performance of layer 3. I.E. it may reduces work load of layer 3.???
+
+c). As introduced in slice, SDN can save energy in a data center network, ??????????
