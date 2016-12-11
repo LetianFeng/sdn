@@ -1,7 +1,16 @@
 4.2
 a)
+State table is used to match packet header fields, and then add a state label to the packet as metadata.
+XFSM is responsible for the definition of a finite state machine with a 4-tuple (S, I, O, T) and a default state S0. Based on the state label from state table and the headers in the packet, XFSM table could match them to action(s) on the packet and a feedback to update the state table.
 
 b)
+Port Knocking
 
 c)
-
+At the end of Section 2.2 of the above referenced paper on OpenState, the “port knocking” example is realized using OpenState. Briefly explain how it is mapped to the two tables.
+A packet from ip address 1.2.3.4, port 8456 comes to the OpenState machine;
+The packet is matched in state table to the state STAGE-3, whicht becomes a label to the packet;
+The labeled packet is transferred to the XFSM table and be matched again;
+According to the match fieds, this packet gets the action drop & next-state OPEN;
+The new state OPEN would be feedbacked to the state table, and the flow "IPsrc=1.2.3.4 -> STAGE-3" wiil be changed to "IPsrc=1.2.3.4 -> OPEN";
+So if another packet from 1.2.3.4 with port 22 comes to this OpenState machine, it could be forwarded to its destination, port knocking is implemented.
