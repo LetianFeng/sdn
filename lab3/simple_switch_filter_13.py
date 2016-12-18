@@ -47,14 +47,14 @@ class SimpleSwitch13(app_manager.RyuApp):
         match = parser.OFPMatch()
         actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,
                                           ofproto.OFPCML_NO_BUFFER)]
-        instructions = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
-        self.add_flow(datapath, 0, 0, match, instructions)
+        self.add_flow(datapath, 0, 0, match, actions)
 
-    def add_flow(self, datapath, priority, table_id, match, instructions, buffer_id=None):
+    def add_flow(self, datapath, priority, table_id, match, actions, buffer_id=None):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
 
-        inst = instructions
+        inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS,
+                                             actions)]
         if buffer_id:
             mod = parser.OFPFlowMod(datapath=datapath, buffer_id=buffer_id,
                                     priority=priority, table_id = table_id, match=match,
@@ -76,7 +76,6 @@ class SimpleSwitch13(app_manager.RyuApp):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
         in_port = msg.match['in_port']
-        table_id = msg.table_id
 
         pkt = packet.Packet(msg.data)
         eth = pkt.get_protocols(ethernet.ethernet)[0]
@@ -100,14 +99,21 @@ class SimpleSwitch13(app_manager.RyuApp):
         else:
             out_port = ofproto.OFPP_FLOOD
 
-        #Flow table 0
+        #Flow table 0, different hosts on same switch is not distinguishable.
+        ofproto = datapath.ofproto
+        parser = datapath.ofproto_parser
         if src in self.mac_to_port[dpid] and in_port in self.mac_to_port[dpid].values():
             match = parser.OFPMatch(in_port=in_port, eth_src=src)
             inst = [parser.OFPInstructionGotoTable(1)]
-            self.add_flow(datapath, 2, 0, match, inst, None)
+            mod = parser.OFPFlowMod(datapath=datapath, priority=2, table_id=0,
+                                        match=match, instructions=inst)
+            datapath.send_msg(mod)
+
         match_drop = parser.OFPMatch(in_port=in_port)
         inst = []
-        self.add_flow(datapath, 1, 0, match_drop, inst, None)
+        mod = parser.OFPFlowMod(datapath=datapath, priority=1, table_id=0,
+                                match=match_drop, instructions=inst)
+        datapath.send_msg(mod)
 
         actions = [parser.OFPActionOutput(out_port)]
 
@@ -117,14 +123,11 @@ class SimpleSwitch13(app_manager.RyuApp):
             # verify if we have a valid buffer_id, if yes avoid to send both
             # flow_mod & packet_out
 
-            #actions = [parser.OFPActionOutput(out_port)]
-            #Flow table 1
-            inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
             if msg.buffer_id != ofproto.OFP_NO_BUFFER:
-                self.add_flow(datapath, 1, 1, match, inst, msg.buffer_id)
+                self.add_flow(datapath, 1, 1, match, actions, msg.buffer_id)
                 return
             else:
-                self.add_flow(datapath, 1, 1, match, inst)
+                self.add_flow(datapath, 1, 1, match, actions)
         data = None
         if msg.buffer_id == ofproto.OFP_NO_BUFFER:
             data = msg.data
