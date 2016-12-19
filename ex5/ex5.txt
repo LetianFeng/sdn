@@ -1,0 +1,57 @@
+5.1
+a)
+Combination of software & hardware switching.
+
+Software:
+Advantage: high performance with flow-table entry installation;
+Disadvantage: low throughput in forwarding;
+
+Hardware:
+Advantage: high throughput in forwarding;
+Disadvantage: poor performance with flow-table entry installation.
+
+b)
+Because entries in hardware table always have a higher priority than in software table, this packet will be firstly looked up in the hardware table.
+So, the entry H1 is matched to the packet.
+
+c)
+The sSwLogic, implemented as a user-level application, works as a proxy between the switches and an OpenFlow controller, which we implemented using POX on the same server.
+
+In normal SDN design there is only 1 flow table, so controller could simply send requests to install or delete entries. But in ShadowSwitch there are 2 flow tables, so the controller must implement following functions:
+1. regularly check the entries in both tables to detect if there is overlapping entries;
+2. move entries from software switch to hardware switch(send request to delete entries in software table & add in hardware);
+3. if overlapping exists, find & delete overlapping entries in hardware table;
+4. other ShadowSwitch logic.
+
+5.2
+a)
+1. Generate the ARP Reply packet in the switch & send it back to source address. Otherwise, based on basic OpenFlow actions the packet could only be replied until this packet forwarded to the destination or processed by controller, this may lead to unaccepted delay.
+2. Generate a ICMP TimeExceeded packet, which is usually used in traceroute/tracepath/tracert function. Otherwise a OpenFlow switch must send the packet with TTL=1 to the controller and wait the response from the controller.
+
+b)
+Packet Template Table is the data structure used to store the content of the packets the switch will generate, it contains many entries(PTEs). Using these entries an InSP switch is able to generate a packet without asking the controller.
+Each PTE consists of 3 parts: packet template id, packet content template, array of copy operations.
+Packet template id is used to identify a PTE, so that a PTE could be referenced by an action or other data structures defined in the InSP API.
+Packet content template contains the common information of specified type of packet with some empty block to be filled in, e.g. ARP Reply packet without src/dst ip & mac address.
+Copy operations could change part of the content template, for example copy the src ip from the incoming packet to the dst ip address of the packet to be generated.
+
+c)
+P1: The packet matched the entry to generate a packet like below, and then the generated packet will be forwarded with matching of the OpenFlow Table:
+SRC_MAC=MAC_A,
+DST_MAC=MAC_D,
+TYPE=ARP_Reply,
+ARP_MACS=MAC_A,
+ARP_MACD=MAC_D,
+ARP_IPS=1.2.3.4,
+ARP_IPD=1.2.3.5
+
+P2: The packet matched the entry to generate a packet like below, and then the generated packet will be forwarded with matching of the OpenFlow Table:
+SRC_MAC=MAC_A,
+DST_MAC=MAC_E,
+TYPE=ARP_Reply,
+ARP_MACS=MAC_A,
+ARP_MACD=MAC_E,
+ARP_IPS=1.2.3.4,
+ARP_IPD=1.2.3.6
+
+P3: the ARP_IPD in this packet does not match the entry, so the packet will match to another entry, or be sent to controller.
