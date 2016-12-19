@@ -113,17 +113,17 @@ class SimpleSwitch13(app_manager.RyuApp):
         else:
             if src in self.mac_to_port[dpid] or in_port not in self.mac_to_port[dpid].values():
                 self.mac_to_port[dpid][src] = in_port
-                match = parser.OFPMatch(in_port=in_port, eth_src=src, eth_dst=dst)
+                match = parser.OFPMatch(in_port=in_port, eth_src=src)
                 inst = [parser.OFPInstructionGotoTable(1)]
                 mod = parser.OFPFlowMod(datapath=datapath, priority=2, table_id=0,
                                             match=match, instructions=inst)
                 datapath.send_msg(mod)
 
-        match_drop = parser.OFPMatch(in_port=in_port)
-        inst = []
-        mod = parser.OFPFlowMod(datapath=datapath, priority=1, table_id=0,
-                                match=match_drop, instructions=inst)
-        datapath.send_msg(mod)
+            match_drop = parser.OFPMatch(in_port=in_port)
+            inst = []
+            mod = parser.OFPFlowMod(datapath=datapath, priority=1, table_id=0,
+                                        match=match_drop, instructions=inst)
+            datapath.send_msg(mod)
 
         actions = [parser.OFPActionOutput(out_port)]
 
