@@ -92,22 +92,32 @@ class SimpleSwitch13(app_manager.RyuApp):
         self.logger.info("packet in %s %s %s %s", dpid, src, dst, in_port)
 
         # learn a mac address to avoid FLOOD next time.
-        self.mac_to_port[dpid][src] = in_port
+        #self.mac_to_port[dpid][src] = in_port
 
         if dst in self.mac_to_port[dpid]:
             out_port = self.mac_to_port[dpid][dst]
         else:
             out_port = ofproto.OFPP_FLOOD
 
-        #Flow table 0, different hosts on same switch is not distinguishable.
+        #Flow table 0. The behavior that two different hosts on one switch send message
+        # one after the other will be recognized as spoof mac address by another switch.
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
-        if src in self.mac_to_port[dpid] and in_port in self.mac_to_port[dpid].values():
-            match = parser.OFPMatch(in_port=in_port, eth_src=src)
+        if in_port >= 3:
+            self.mac_to_port[dpid][src] = in_port
+            match = parser.OFPMatch(in_port=in_port, eth_dst=dst)
             inst = [parser.OFPInstructionGotoTable(1)]
             mod = parser.OFPFlowMod(datapath=datapath, priority=2, table_id=0,
-                                        match=match, instructions=inst)
+                                    match=match, instructions=inst)
             datapath.send_msg(mod)
+        else:
+            if src in self.mac_to_port[dpid] or in_port not in self.mac_to_port[dpid].values():
+                self.mac_to_port[dpid][src] = in_port
+                match = parser.OFPMatch(in_port=in_port, eth_src=src, eth_dst=dst)
+                inst = [parser.OFPInstructionGotoTable(1)]
+                mod = parser.OFPFlowMod(datapath=datapath, priority=2, table_id=0,
+                                            match=match, instructions=inst)
+                datapath.send_msg(mod)
 
         match_drop = parser.OFPMatch(in_port=in_port)
         inst = []
