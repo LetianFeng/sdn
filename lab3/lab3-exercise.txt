@@ -1,0 +1,10 @@
+Task1
+Differences:
+a. OpenFlow 1.3 supports multiple Flow Tables, while version 1.0 only supports one.
+
+b. OpenFlow 1.3 used instructions to maintain the functionality of actions from version 1.0 as well as extends it.
+
+c. As described in the code, OpenFlow 1.3 installed table-miss flow entry to deal with the situation that packet doesn’t match any flow entry in the table. In this situation packets will be sent to controller.
+
+Task2
+With OpenFlow 1.3 much less flow entries are needed than with OpenFlow 1.0.

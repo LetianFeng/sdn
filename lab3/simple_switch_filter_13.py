@@ -12,6 +12,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# Changes: Chunyuan Yu(2587628), Letian Feng(2255840), Zhen Chen(2665935)
 
 from ryu.base import app_manager
 from ryu.controller import ofp_event
@@ -99,8 +100,9 @@ class SimpleSwitch13(app_manager.RyuApp):
         else:
             out_port = ofproto.OFPP_FLOOD
 
-        #Flow table 0. The behavior that two different hosts on one switch send message
-        # one after the other will be recognized as spoof mac address by another switch.
+        # Flow table 0, to match mac address with port number.
+        # The behavior that two different hosts on one switch send message one 
+        # after the other will be recognized as spoof mac address by another switch.
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
         if in_port >= 3:
@@ -127,7 +129,7 @@ class SimpleSwitch13(app_manager.RyuApp):
 
         actions = [parser.OFPActionOutput(out_port)]
 
-        # install a flow to avoid packet_in next time
+        # install a flow in flow table 1 to send packets out.
         if out_port != ofproto.OFPP_FLOOD:
             match = parser.OFPMatch(in_port=in_port, eth_dst=dst)
             # verify if we have a valid buffer_id, if yes avoid to send both
