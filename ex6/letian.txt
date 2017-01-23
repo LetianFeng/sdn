@@ -1,0 +1,15 @@
+6.1
+b)
+According to Fig. 6.1 & 6.2, headers are saved in the RTE_PKTMBUF_HEADROOM, and multiple rte_mbufs could be segmented together(buffer chaining). So we could allocate a new mbuf with a headroom and a segment of length 0, then we use the functions "prepend/append data before" and "remove data at the beginning of the buffer", which are described in section 6.5, to move the Ethernet header & other control information before it into the first mbuf and append an additional header after it, finally move IP header and the requiement is fulfilled.
+
+d)
+NF3 should achieve the highest performance, because the only task is the encapsulation of GRE and IP and Ethernet(or aother 2-layer protokol) headers, the performance depends almost only on NIC;
+NF1 achieves medium performan, because except for decapsulation of all headers before payload(e.g. Ethernet, IP, TCP), it has to execute a search program for a 16 bytes signature, the performance depends on NIC and CPU;
+NF3 achieves the lowest performance, because except for decapsulation of Ethernet and IP headers, it has to compare the source ip address to 20.000 ip addresses(32 bits * 20.000 = 640.000 bits = 80.000bytes), the performance depends on NIC, CPU and storage/memory(much slower).
+
+6.2
+I
+This code is supposed to check if the ARP request's destination ip is "my_ipv4" and it's from the same subnet as "my_ipv4&my_maskv4". If yes then modify the request packet's mac & ip addresses in arp header, and the mac address in ethernet header, and finally send it back.
+
+II
+__bswap_32(arpdata−>arp_sip)&my_maskv4 != my_ipv4&my_maskv4
