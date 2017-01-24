@@ -7,4 +7,34 @@ Ingress will check if the header "vlan" is valid, if yes then do some other proc
 
 7.2
 a)
+#include "headers.p4"			// import program in problem 7.1
+header_type ingress_md_t		// define header type ingress_md_t, which has a field vlanid
+metadata ingress_md_t ingress_md ;	// declare a metadata named ingress_med in type of ingress_md_t
+action _nop () { }			// do nothing
+table map_vlan // table for vlanid, read ingress port & vlanid in full length and save in the table; table can do actions: sendPushTag, sendChangeTag, sendPopTag, send or _drop
+action sendPushTag( in bit <16> tag , in bit <16> port ) // add parameter "tag" to the vlan header and send it out via parameter "port"
+action sendChangeTag ( in bit <16> tag , in bit <16> port ) // change the tag of vlan header to the parameter "tag" and send it out via parameter "port"
+action sendPopTag ( in bit <16> port ) // set the packet non-vlan-tagged & remove the vlan-tag and send it out via parameter "port"
+action send ( in bit <16> port ) // set egress data in the metadata as the parameter "port"
+action _drop () // drop the packet
+action set_has_vlan() // set the vlanid in the metadata as in vlan header
+action set_has_no_vlan() // set vlanid in the the metadata as 0
+table prepare // table for preparation, read the etherType in full length and save in the table, the table can do actions: set_has_vlan, set_has_no_vlan
+control ingress // call the table "prepare" & "map_vlan" to read the packet and do relevant works
+control egress // do nothing
 
+b)
+action sendPushTag ( in bit <16> tag , in bit <16> port ) {
+	add_header(vlan);
+	standard_metadata . egress_spec = port ;
+}
+
+c)
+match=ethernet.etherType:0x8100,standard_metadata.ingress_port:0,ingress_md.vlanid:1,action=sendChangeTag(0,1)
+match=ethernet.etherType:0x8100,standard_metadata.ingress_port:0,ingress_md.vlanid:2,action=sendChang
+eTag(0,2)
+match=ethernet.etherType:0x8100,standard_metadata.ingress_port:0,ingress_md.vlanid:3,action=sendChang
+eTag(0,3)
+match=ethernet.etherType:0x0800,standard_metadata.ingress_port:1,action=sendPushTag(1,0)
+match=ethernet.etherType:0x0800,standard_metadata.ingress_port:2,action=sendPushTag(2,0)
+match=ethernet.etherType:0x0800,standard_metadata.ingress_port:3,action=sendPushTag(3,0)
