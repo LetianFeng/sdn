@@ -26,7 +26,8 @@ control egress // do nothing
 b)
 action sendPushTag ( in bit <16> tag , in bit <16> port ) {
 	add_header(vlan);
-	standard_metadata . egress_spec = port ;
+	ethernet.etherType = ETHERTYPE_VLAN;
+	standard_metadata.egress_spec = port ;
 }
 
 c)
