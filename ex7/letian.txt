@@ -30,11 +30,9 @@ action sendPushTag ( in bit <16> tag , in bit <16> port ) {
 }
 
 c)
-match=ethernet.etherType:0x8100,standard_metadata.ingress_port:0,ingress_md.vlanid:1,action=sendChangeTag(0,1)
-match=ethernet.etherType:0x8100,standard_metadata.ingress_port:0,ingress_md.vlanid:2,action=sendChang
-eTag(0,2)
-match=ethernet.etherType:0x8100,standard_metadata.ingress_port:0,ingress_md.vlanid:3,action=sendChang
-eTag(0,3)
-match=ethernet.etherType:0x0800,standard_metadata.ingress_port:1,action=sendPushTag(1,0)
-match=ethernet.etherType:0x0800,standard_metadata.ingress_port:2,action=sendPushTag(2,0)
-match=ethernet.etherType:0x0800,standard_metadata.ingress_port:3,action=sendPushTag(3,0)
+match=ethernet.etherType:0x8100, standard_metadata.ingress_port:0, ingress_md.vlanid:1, action=sendChangeTag(0,1)
+match=ethernet.etherType:0x8100, standard_metadata.ingress_port:0, ingress_md.vlanid:2, action=sendChangeTag(0,2)
+match=ethernet.etherType:0x8100, standard_metadata.ingress_port:0, ingress_md.vlanid:3, action=sendChangeTag(0,3)
+match=ethernet.etherType:0x0800, standard_metadata.ingress_port:1, action=sendPushTag(1,0)
+match=ethernet.etherType:0x0800, standard_metadata.ingress_port:2, action=sendPushTag(2,0)
+match=ethernet.etherType:0x0800, standard_metadata.ingress_port:3, action=sendPushTag(3,0)
