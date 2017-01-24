@@ -1,0 +1,10 @@
+7.1
+a)
+The general purpose of the code is to check if the incoming packet is a vlan-tagged packet, if yes then get the vlan-tag of the packet and do some work defined in control "ingress". For example, a packet vlan-tagged with vlan-5 will be first parsed in "parse_ethernet" and be selected as "ETHERTYPE_VLAN", then the paser "parse_vlan" will be executed and all the information of header_type "vlan_t" will be extracted and then saved in the header "vlan" waiting for the processing in the "ingress".
+
+b)
+Ingress will check if the header "vlan" is valid, if yes then do some other processing such as untag the packet and forward it to a port, or change the tag etc. Otherwise, the ingress could add a vlan-tag on the packet or do some other works.
+
+7.2
+a)
+
