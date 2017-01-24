@@ -1,0 +1,19 @@
+6.1.a.1
+Advantages of Interrupts: CPU responses immediately when a task arrives instead of wasting time for asking devices one by one. This feature suits for real time tasks. 
+
+Advantages of PMD: In PMD it’s the CPU that determines when to handle requests. It’s simpler and no special hardware is needed. Further more, since polling policy is determined by CPU, it prevents the situation that CPU is flooded by too many requests.
+
+6.1.a.2
+Interrupts is suitable for tasks which require low delay.
+PMD is suitable for steady traffic with high amount of packets.
+
+6.1.c
+Since x86 is small endian and IP packet is designed to big endian, swap functions declared in rte_byteorder.h are needed to swap the position of low and high bytes.
+
+7.1.a
+When a packet incomes, this code first checks if it’s a VLAN packet. If yes, then parse its VLAN header out. Then this packet will be forwarded to the next IP Packet handling stage.
+
+7.1.b
+It calls the ingress function to forward the packet to the IP Packet handling stage.
+
+7.2.a
